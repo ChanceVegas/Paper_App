@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { motion } from "motion/react";
 import { MATERIALS, PATTERNS, STUDIO_FOR } from "@/lib/constants";
 import { usd } from "@/lib/pricing";
 import type { Design, Order } from "@/lib/types";
@@ -29,8 +30,22 @@ export default function PaymentModal({
   const material = MATERIALS.find((m) => m.id === design.material)!;
 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <motion.div
+      className="overlay"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div
+        className="modal"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, y: 28, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+      >
         <div className="modal-h">
           <span className="mono">{placed ? "ORDER CONFIRMED" : "DEPOSIT — PRE-ORDER"}</span>
           <button className="iconbtn" onClick={onClose} aria-label="Close">
@@ -115,7 +130,7 @@ export default function PaymentModal({
             </p>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

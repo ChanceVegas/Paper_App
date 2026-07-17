@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   MATERIALS,
   PALETTES,
@@ -18,6 +19,7 @@ import {
   usd,
 } from "@/lib/pricing";
 import type { Design, MaterialId, Order, PatternId } from "@/lib/types";
+import { AnimatedPrice, Reveal } from "./motion";
 import PaymentModal from "./PaymentModal";
 import PreviewFrame from "./PreviewFrame";
 import RoomPreview from "./RoomPreview";
@@ -64,7 +66,7 @@ export default function Designer({
 
   return (
     <div className="designer-grid">
-      <aside className="panel controls">
+      <Reveal className="panel controls" delay={0.05}>
         <div className="panel-h mono">SPEC 01 — PATTERN</div>
         <div className="sect">
           <div className="patgrid">
@@ -173,15 +175,25 @@ export default function Designer({
             />
           </label>
         </div>
-      </aside>
+      </Reveal>
 
       <section className="stage">
-        <PreviewFrame
-          caption={`PROOF — ${PATTERNS.find((p) => p.id === patternId)!.name.toUpperCase()} / ×${scale.toFixed(2)} / ${STUDIO_FOR[material].toUpperCase()}`}
-        >
-          <RoomPreview design={design} />
-        </PreviewFrame>
+        <Reveal>
+          <PreviewFrame
+            caption={`PROOF — ${PATTERNS.find((p) => p.id === patternId)!.name.toUpperCase()} / ×${scale.toFixed(2)} / ${STUDIO_FOR[material].toUpperCase()}`}
+          >
+            <motion.div
+              key={patternId}
+              initial={{ opacity: 0.25 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.45 }}
+            >
+              <RoomPreview design={design} />
+            </motion.div>
+          </PreviewFrame>
+        </Reveal>
 
+        <Reveal delay={0.1}>
         <div className="ticket">
           <div className="ticket-h mono">JOB TICKET — ESTIMATE</div>
           <div className="trow mono">
@@ -201,15 +213,15 @@ export default function Designer({
           <div className="tdash" />
           <div className="trow trow--total mono">
             <span>TOTAL</span>
-            <span>{usd(price)}</span>
+            <span><AnimatedPrice value={price} /></span>
           </div>
           <div className="trow mono">
             <span>DEPOSIT DUE NOW (30%)</span>
-            <span>{usd(deposit)}</span>
+            <span><AnimatedPrice value={deposit} /></span>
           </div>
           <div className="trow mono">
             <span>BALANCE ON COMPLETION</span>
-            <span>{usd(balance)}</span>
+            <span><AnimatedPrice value={balance} /></span>
           </div>
           <button
             className="btn btn--primary btn--block"
@@ -219,21 +231,24 @@ export default function Designer({
             Reserve production slot — pay {usd(deposit)}
           </button>
         </div>
+        </Reveal>
       </section>
 
-      {payOpen && (
-        <PaymentModal
-          design={design}
-          price={price}
-          deposit={deposit}
-          onPay={(name) => placeOrder(design, name)}
-          onClose={() => setPayOpen(false)}
-          onView={(code) => {
-            setPayOpen(false);
-            onPlaced(code);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {payOpen && (
+          <PaymentModal
+            design={design}
+            price={price}
+            deposit={deposit}
+            onPay={(name) => placeOrder(design, name)}
+            onClose={() => setPayOpen(false)}
+            onView={(code) => {
+              setPayOpen(false);
+              onPlaced(code);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

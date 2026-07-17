@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { MATERIALS, STUDIO_FOR } from "@/lib/constants";
 import { depositFor, priceFor, round2 } from "@/lib/pricing";
 import { SEED_COUNTER, SEED_NOTICES, SEED_ORDERS } from "@/lib/seed";
@@ -8,6 +9,7 @@ import type { Design, Fulfilment, Notice, Order, Role } from "@/lib/types";
 import ClientOrders from "./ClientOrders";
 import Designer from "./Designer";
 import Header from "./Header";
+import { fadeUp, viewTransition } from "./motion";
 import OrderDetail from "./OrderDetail";
 import StudioDashboard from "./StudioDashboard";
 
@@ -112,9 +114,19 @@ export default function App() {
 
   const openOrder = orders.find((o) => o.code === openCode) ?? null;
 
+  const viewKey =
+    role === "studio"
+      ? "studio"
+      : view === "design"
+        ? "design"
+        : openOrder
+          ? `detail-${openOrder.code}`
+          : "orders";
+
   return (
-    <div className="shell">
-      <Header
+    <MotionConfig reducedMotion="user">
+      <div className="shell">
+        <Header
         role={role}
         setRole={setRole}
         view={view}
@@ -122,36 +134,48 @@ export default function App() {
           setView(v);
           setOpenCode(null);
         }}
-        orderCount={orders.length}
-        notices={notices}
-        onOpenNotice={openNotice}
-      />
+          orderCount={orders.length}
+          notices={notices}
+          onOpenNotice={openNotice}
+        />
 
-      <main className="main">
-        {role === "studio" ? (
-          <StudioDashboard orders={orders} advance={advance} />
-        ) : view === "design" ? (
-          <Designer
-            placeOrder={placeOrder}
-            onPlaced={(code) => {
-              setView("orders");
-              setOpenCode(code);
-            }}
-          />
-        ) : openOrder ? (
-          <OrderDetail
-            order={openOrder}
-            onBack={() => setOpenCode(null)}
-            payBalance={payBalance}
-          />
-        ) : (
-          <ClientOrders orders={orders} onOpen={setOpenCode} />
-        )}
-      </main>
+        <main className="main">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={viewKey}
+              variants={fadeUp}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={viewTransition}
+            >
+              {role === "studio" ? (
+                <StudioDashboard orders={orders} advance={advance} />
+              ) : view === "design" ? (
+                <Designer
+                  placeOrder={placeOrder}
+                  onPlaced={(code) => {
+                    setView("orders");
+                    setOpenCode(code);
+                  }}
+                />
+              ) : openOrder ? (
+                <OrderDetail
+                  order={openOrder}
+                  onBack={() => setOpenCode(null)}
+                  payBalance={payBalance}
+                />
+              ) : (
+                <ClientOrders orders={orders} onOpen={setOpenCode} />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </main>
 
-      <footer className="ftr mono">
-        ATELIER — PROTOTYPE BUILD · IN-MEMORY STATE · MOCK PAYMENTS
-      </footer>
-    </div>
+        <footer className="ftr mono">
+          ATELIER — PROTOTYPE BUILD · IN-MEMORY STATE · MOCK PAYMENTS
+        </footer>
+      </div>
+    </MotionConfig>
   );
 }

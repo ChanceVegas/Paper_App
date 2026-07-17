@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Bell } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import type { Notice, Role } from "@/lib/types";
 
 const fmtTime = (iso: string) =>
@@ -80,10 +81,31 @@ export default function Header({
             aria-label="Notifications"
           >
             <Bell size={17} strokeWidth={1.75} />
-            {unread > 0 && <span className="bell-dot mono">{unread}</span>}
+            <AnimatePresence>
+              {unread > 0 && (
+                <motion.span
+                  key="dot"
+                  className="bell-dot mono"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                >
+                  {unread}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
+          <AnimatePresence>
           {bellOpen && (
-            <div className="notif-pop">
+            <motion.div
+              className="notif-pop"
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 420, damping: 32 }}
+              style={{ transformOrigin: "top right" }}
+            >
               <div className="panel-h mono">NOTIFICATIONS — {notices.length}</div>
               {notices.length === 0 ? (
                 <div className="notif-empty mono">NOTHING YET</div>
@@ -104,8 +126,9 @@ export default function Header({
                   </button>
                 ))
               )}
-            </div>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
       </div>
     </header>

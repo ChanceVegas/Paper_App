@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { MATERIALS, STAGES } from "@/lib/constants";
 import { usd } from "@/lib/pricing";
 import type { Order } from "@/lib/types";
@@ -33,7 +34,12 @@ export default function StudioCard({
   })();
 
   return (
-    <div className="card">
+    <motion.div
+      className="card"
+      layoutId={order.code}
+      layout
+      transition={{ type: "spring", stiffness: 320, damping: 30 }}
+    >
       <div className="card-thumb">
         <Wallpaper
           patternId={order.design.patternId}
@@ -66,6 +72,6 @@ export default function StudioCard({
       ) : (
         <div className="card-wait mono">CLOSED</div>
       )}
-    </div>
+    </motion.div>
   );
 }

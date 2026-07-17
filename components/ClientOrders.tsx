@@ -1,9 +1,11 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { motion } from "motion/react";
 import { MATERIALS, STAGES } from "@/lib/constants";
 import { usd } from "@/lib/pricing";
 import type { Order } from "@/lib/types";
+import { EASE } from "./motion";
 import Wallpaper from "./Wallpaper";
 
 const fmtDate = (iso: string) =>
@@ -29,11 +31,18 @@ export default function ClientOrders({
     <div className="panel">
       <div className="panel-h mono">ORDERS — {orders.length} ON FILE</div>
       <div className="orders-list">
-        {orders.map((o) => {
+        {orders.map((o, i) => {
           const material = MATERIALS.find((m) => m.id === o.design.material)!;
           const stage = STAGES[o.stage];
           return (
-            <button key={o.code} className="ordrow" onClick={() => onOpen(o.code)}>
+            <motion.button
+              key={o.code}
+              className="ordrow"
+              onClick={() => onOpen(o.code)}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: EASE, delay: i * 0.05 }}
+            >
               <span className="thumb">
                 <Wallpaper
                   patternId={o.design.patternId}
@@ -56,7 +65,7 @@ export default function ClientOrders({
                 <span className="ordprice mono">{usd(o.price)}</span>
               </span>
               <ArrowRight size={16} strokeWidth={1.75} />
-            </button>
+            </motion.button>
           );
         })}
       </div>

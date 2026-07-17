@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Truck, Wrench, X } from "lucide-react";
+import { motion } from "motion/react";
 import { INSTALL_RATE, SHIP_FLAT, installFee, round2, usd } from "@/lib/pricing";
 import type { Fulfilment, Order } from "@/lib/types";
 
@@ -22,8 +23,22 @@ export default function BalanceModal({
   const total = round2(order.balance + fee);
 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <motion.div
+      className="overlay"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div
+        className="modal"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, y: 28, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+      >
         <div className="modal-h">
           <span className="mono">
             {done ? "PAID IN FULL" : `BALANCE — ${order.code}`}
@@ -101,7 +116,7 @@ export default function BalanceModal({
             </button>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

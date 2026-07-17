@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { MATERIALS, PATTERNS, STAGES } from "@/lib/constants";
 import { OVERAGE, usd } from "@/lib/pricing";
 import type { Fulfilment, Order } from "@/lib/types";
 import BalanceModal from "./BalanceModal";
+import { EASE, Reveal } from "./motion";
 import PreviewFrame from "./PreviewFrame";
 import RoomPreview from "./RoomPreview";
 
@@ -45,19 +47,24 @@ export default function OrderDetail({
 
       <div className="detail-grid">
         <div>
+          <Reveal>
           <PreviewFrame
             caption={`${order.code} — ${pattern.name.toUpperCase()} / ×${order.design.scale.toFixed(2)} / ${order.studio.toUpperCase()}`}
           >
             <RoomPreview design={order.design} />
           </PreviewFrame>
+          </Reveal>
 
           <div className="panel timelinewrap">
             <div className="panel-h mono">PRODUCTION TIMELINE</div>
             <ol className="timeline">
               {STAGES.map((s, i) => (
-                <li
+                <motion.li
                   key={s.key}
                   className={`tstep${i < order.stage ? " done" : ""}${i === order.stage ? " now" : ""}`}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, ease: EASE, delay: 0.15 + i * 0.07 }}
                 >
                   <span className="tmark" />
                   <span className="tlabel">
@@ -66,13 +73,13 @@ export default function OrderDetail({
                     </span>
                     <span className="tdetail mono">{stepDetail(i).toUpperCase()}</span>
                   </span>
-                </li>
+                </motion.li>
               ))}
             </ol>
           </div>
         </div>
 
-        <div>
+        <Reveal delay={0.08}>
           <div className="ticket">
             <div className="ticket-h mono">JOB TICKET — {order.code}</div>
             <div className="trow mono">
@@ -147,16 +154,18 @@ export default function OrderDetail({
               </button>
             )}
           </div>
-        </div>
+        </Reveal>
       </div>
 
-      {balOpen && (
-        <BalanceModal
-          order={order}
-          onPay={(f, fee) => payBalance(order.code, f, fee)}
-          onClose={() => setBalOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {balOpen && (
+          <BalanceModal
+            order={order}
+            onPay={(f, fee) => payBalance(order.code, f, fee)}
+            onClose={() => setBalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

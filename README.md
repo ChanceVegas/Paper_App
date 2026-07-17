@@ -3,9 +3,13 @@
 Custom wallpaper design app: clients design a pattern, reserve a production
 slot with a 30% deposit, and a routed studio takes it from press to wall.
 
-**Design system:** "Print Shop Precision" — concrete gray ground, zero
-border-radius, 1px ink rules, Archivo uppercase display, IBM Plex Mono spec
-labels, CMYK bar, registration marks, job-ticket pricing.
+**Design system:** "Print Shop Precision" — gallery-white ground with
+near-black ink (Herzog & de Meuron palette register), zero border-radius,
+ink rules on primary structure with warm-gray hairlines inside, Archivo
+uppercase display, IBM Plex Mono spec labels, CMYK bar, registration marks,
+job-ticket pricing. Motion layer via Motion (Framer Motion): view
+transitions, staggered reveals, spring modals, animated prices, and
+board-card lane transitions — all respecting `prefers-reduced-motion`.
 
 ## Status
 

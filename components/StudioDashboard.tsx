@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "motion/react";
 import { STUDIOS } from "@/lib/constants";
 import type { Order } from "@/lib/types";
+import { EASE } from "./motion";
 import StudioCard from "./StudioCard";
 
 const LANES: { title: string; stages: number[] }[] = [
@@ -48,12 +50,18 @@ export default function StudioDashboard({
       </div>
 
       <div className="board">
-        {LANES.map((lane) => {
+        {LANES.map((lane, li) => {
           const cards = visible
             .filter((o) => lane.stages.includes(o.stage))
             .sort((a, b) => a.stage - b.stage || a.code.localeCompare(b.code));
           return (
-            <div key={lane.title} className="lane">
+            <motion.div
+              key={lane.title}
+              className="lane"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: EASE, delay: li * 0.06 }}
+            >
               <div className="lane-h mono">
                 {lane.title.toUpperCase()} — {cards.length}
               </div>
@@ -71,7 +79,7 @@ export default function StudioDashboard({
                   ))
                 )}
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
